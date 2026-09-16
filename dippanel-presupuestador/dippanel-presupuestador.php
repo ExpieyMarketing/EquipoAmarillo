@@ -18,6 +18,8 @@ define( 'DIPP_PRES_VERSION', '1.0.2' );
 define( 'DIPP_PRES_URL',     plugin_dir_url( __FILE__ ) );
 define( 'DIPP_PRES_PATH',    plugin_dir_path( __FILE__ ) );
 
+require_once DIPP_PRES_PATH . 'includes/dipp-ghl-webhook.php';
+
 /* ──────────────────────────────────────────
    ENCOLAR ESTILOS Y SCRIPTS
 ────────────────────────────────────────── */
@@ -116,6 +118,10 @@ function dipp_enviar_presupuesto() {
 ];
 
 	$sent = wp_mail( $to, $subject, $body, $headers );
+
+	dipp_ghl_enviar_webhook( compact(
+		'nombre','apellidos','empresa','email','telefono','cp','mensaje','total','desglose'
+	) );
 
 	if ( $sent ) {
 		wp_send_json_success( 'Presupuesto enviado correctamente.' );
