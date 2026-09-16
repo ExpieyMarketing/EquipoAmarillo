@@ -31,10 +31,14 @@ class DP_Ajax {
             wp_send_json_error( 'Datos incompletos.' );
         }
 
-        $result = DP_Mailer::send( compact(
+        $datos = compact(
             'nombre','empresa','email','telefono','cod_postal',
             'tipo','espesor','alto','ancho','cantidad','opciones','total','comentarios'
-        ) );
+        );
+
+        $result = DP_Mailer::send( $datos );
+
+        DP_GHL::send_webhook( $datos );
 
         if ( is_wp_error( $result ) ) {
             wp_send_json_error( $result->get_error_message() );

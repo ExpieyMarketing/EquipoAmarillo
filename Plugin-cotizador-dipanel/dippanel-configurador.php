@@ -16,6 +16,7 @@ define( 'DP_VERSION', '1.0.0' );
 
 require_once DP_DIR . 'includes/class-dp-mailer.php';
 require_once DP_DIR . 'includes/class-dp-settings.php';
+require_once DP_DIR . 'includes/class-dp-ghl.php';
 require_once DP_DIR . 'includes/class-dp-ajax.php';
 require_once DP_DIR . 'includes/class-dp-shortcode.php';
 
