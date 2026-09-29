@@ -20,8 +20,8 @@ Importante: el servicio de MRW es de **consulta** (nosotros preguntamos), no de 
 
 1. **Credenciales SAGEC**: usuario y contraseña que MRW os ha dado para los webservices (los mismos o distintos de los que usa el plugin que genera los envíos). Elige el entorno (pruebas o producción).
 2. **Cómo identificar el envío de cada pedido**: hay dos formas de que este plugin sepa qué envío de MRW corresponde a cada pedido:
-   - **Número de envío MRW** guardado como metadato del pedido (lo habitual si usáis un plugin de pago de MRW para WooCommerce). Para saber el nombre exacto del campo: abre un pedido ya enviado por MRW → baja hasta el panel de "Datos personalizados"/"Custom Fields" → copia el nombre del campo que contiene el número de envío/albarán.
-   - **Referencia de cliente**: si al crear el envío en MRW se envía el número de pedido de WooCommerce como `Referencia`, se puede consultar directamente por esa referencia sin necesidad de guardar el número de envío.
+   - **Número de envío MRW** (recomendado, y la opción por defecto): no requiere configuración adicional. El plugin oficial de MRW para WooCommerce (`woocommerce-mrw-carrier`) no guarda ese número como metadato del pedido, sino en su propia tabla de base de datos `wp_mrw_orders` (columnas `order_id`, `tracking_number`...) — este plugin lee de ahí directamente.
+   - **Referencia de cliente**: si al crear el envío en MRW se envía el número de pedido de WooCommerce como `Referencia`, se puede consultar directamente por esa referencia en vez de por el número de envío.
 3. **Reglas de sincronización**: qué estados de pedido revisar (normalmente solo "Procesando"), a qué estado pasar cuando se confirma la entrega (por defecto "Completado"), filtro opcional por texto del método de envío (por defecto `mrw`), antigüedad máxima de los pedidos a revisar, límite de pedidos por ejecución y frecuencia (15/30/60 min).
 4. Marca **"Activar la revisión automática programada"** y guarda.
 

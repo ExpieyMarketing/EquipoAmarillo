@@ -40,7 +40,6 @@ class MRW_Settings {
             : MRW_Crypto::encrypt( $new_pass );
 
         $clean['tipo_filtro']         = in_array( $in['tipo_filtro'] ?? '', [ 'numero_envio', 'referencia' ], true ) ? $in['tipo_filtro'] : 'numero_envio';
-        $clean['meta_key_envio']      = sanitize_text_field( $in['meta_key_envio'] ?? '_mrw_numero_envio' );
         $clean['meta_key_referencia'] = sanitize_text_field( $in['meta_key_referencia'] ?? '' );
 
         $estados_validos = array_keys( wc_get_order_statuses() );
@@ -68,7 +67,6 @@ class MRW_Settings {
             'sagec_login'         => '',
             'sagec_pass'          => '',
             'tipo_filtro'         => 'numero_envio',
-            'meta_key_envio'      => '_mrw_numero_envio',
             'meta_key_referencia' => '',
             'estados_origen'      => [ 'processing' ],
             'estado_destino'      => 'completed',
@@ -154,21 +152,14 @@ class MRW_Settings {
                                     <td>
                                         <label style="display:block;margin-bottom:6px">
                                             <input type="radio" name="<?php echo self::OPT; ?>[tipo_filtro]" value="numero_envio" <?php checked( $o['tipo_filtro'], 'numero_envio' ); ?>>
-                                            Número de envío MRW guardado como metadato del pedido
+                                            Número de envío MRW (recomendado)
                                         </label>
                                         <label style="display:block">
                                             <input type="radio" name="<?php echo self::OPT; ?>[tipo_filtro]" value="referencia" <?php checked( $o['tipo_filtro'], 'referencia' ); ?>>
                                             Referencia de cliente que se envió a MRW al crear la etiqueta
                                         </label>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th><label>Metadato del nº de envío MRW</label></th>
-                                    <td>
-                                        <input type="text" name="<?php echo self::OPT; ?>[meta_key_envio]" value="<?php echo esc_attr( $o['meta_key_envio'] ); ?>" class="regular-text" placeholder="_mrw_numero_envio">
                                         <p class="description">
-                                            Nombre del campo (custom field) donde vuestro plugin de MRW guarda el número de envío/albarán en cada pedido.
-                                            Para verlo: abre un pedido ya enviado por MRW → panel "Datos personalizados"/"Custom Fields" al final de la pantalla → copia el nombre exacto del campo.
+                                            Con "Número de envío MRW" no hace falta configurar nada más: se lee automáticamente de la tabla <code>wp_mrw_orders</code> que crea el plugin oficial de MRW para WooCommerce (<code>woocommerce-mrw-carrier</code>) al generar cada etiqueta.
                                         </p>
                                     </td>
                                 </tr>

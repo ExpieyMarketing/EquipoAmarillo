@@ -26,7 +26,6 @@ class MRW_Sync {
 
         $opts        = MRW_Settings::get_all();
         $tipo_filtro = $opts['tipo_filtro'];
-        $meta_key    = $opts['meta_key_envio'];
 
         $args = [
             'status'  => $opts['estados_origen'],
@@ -35,13 +34,6 @@ class MRW_Sync {
             'order'   => 'DESC',
             'return'  => 'ids',
         ];
-
-        if ( $tipo_filtro !== 'referencia' && ! empty( $meta_key ) ) {
-            $args['meta_query'] = [
-                [ 'key' => $meta_key, 'compare' => 'EXISTS' ],
-                [ 'key' => $meta_key, 'value' => '', 'compare' => '!=' ],
-            ];
-        }
 
         $order_ids = wc_get_orders( $args );
         $cutoff    = time() - ( intval( $opts['dias_atras'] ) * DAY_IN_SECONDS );
@@ -63,13 +55,13 @@ class MRW_Sync {
 
             $valor = $tipo_filtro === 'referencia'
                 ? ( ! empty( $opts['meta_key_referencia'] ) ? $order->get_meta( $opts['meta_key_referencia'] ) : (string) $order->get_order_number() )
-                : $order->get_meta( $meta_key );
+                : self::get_tracking_number( $order_id );
 
             $valor = trim( (string) $valor );
 
             if ( $valor === '' ) {
                 $summary['skipped']++;
-                $summary['detalles'][] = sprintf( 'Pedido #%d: sin dato de envío MRW, omitido.', $order_id );
+                $summary['detalles'][] = sprintf( 'Pedido #%d: sin número de envío MRW registrado, omitido.', $order_id );
                 continue;
             }
 
@@ -99,6 +91,18 @@ class MRW_Sync {
 
         self::log( $summary, $manual );
         return $summary;
+    }
+
+    /**
+     * El plugin oficial de MRW para WooCommerce (woocommerce-mrw-carrier) no guarda el número
+     * de envío como metadato del pedido: lo guarda en su propia tabla {prefijo}mrw_orders,
+     * ligada por order_id. Confirmado revisando su código y consultando la base de datos.
+     */
+    private static function get_tracking_number( int $order_id ): string {
+        global $wpdb;
+        $tabla = $wpdb->prefix . 'mrw_orders';
+        $valor = $wpdb->get_var( $wpdb->prepare( "SELECT tracking_number FROM $tabla WHERE order_id = %d", $order_id ) );
+        return $valor ?: '';
     }
 
     private static function envio_coincide( \WC_Order $order, string $filtro ): bool {
